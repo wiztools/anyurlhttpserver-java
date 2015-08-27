@@ -2,14 +2,12 @@ package org.wiztools.anyurlhttpserver;
 
 import java.io.File;
 import java.io.PrintStream;
-import java.util.List;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.wiztools.commons.MultiValueMap;
-import org.wiztools.commons.MultiValueMapArrayList;
 import org.wiztools.commons.MultiValueMapLinkedHashSet;
 
 /**
