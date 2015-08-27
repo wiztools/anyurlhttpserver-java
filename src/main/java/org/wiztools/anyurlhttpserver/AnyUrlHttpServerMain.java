@@ -18,12 +18,13 @@ public class AnyUrlHttpServerMain {
     
     private static void printHelp(PrintStream out) {
         out.println("Parameters: ");
-        out.println("\t-p\t: [Mandatory] port number.");
-        out.println("\t-f\t: File to serve. When not given, prints <p>Hello World!</p>");
-        out.println("\t-c\t: Response Content-Type. Default is text/html.");
-        out.println("\t-r\t: Response character encoding. Default is utf-8.");
-        out.println("\t-H\t: Response header in the format: `header:value'.");
-        out.println("\t-h\t: Print this help.");
+        out.println("\t-p    [Mandatory] port number.");
+        out.println("\t-f    File to serve. When not given, prints <p>Hello World!</p>");
+        out.println("\t-c    Response Content-Type. Default is text/html.");
+        out.println("\t-r    Response character encoding. Default is utf-8.");
+        out.println("\t-H    * Response header in the format: `header:value'.");
+        out.println("\t-h    Print this help.");
+        out.println("Parameters with * can be used more than once.");
     }
     
     public static void main(String[] args) throws Exception {
