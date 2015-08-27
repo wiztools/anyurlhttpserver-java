@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.wiztools.commons.Charsets;
+import org.wiztools.commons.MultiValueMap;
 import org.wiztools.commons.StreamUtil;
 
 /**
@@ -20,6 +21,7 @@ public class AnyUrlServlet extends HttpServlet {
     private String contentType = "text/html";
     private String charset = "utf-8";
     private File file;
+    private MultiValueMap<String, String> headers;
 
     public void setContentType(String contentType) {
         this.contentType = contentType;
@@ -31,6 +33,10 @@ public class AnyUrlServlet extends HttpServlet {
 
     public void setFile(File file) {
         this.file = file;
+    }
+    
+    public void setHeaders(MultiValueMap headers) {
+        this.headers = headers;
     }
 
     @Override
@@ -57,6 +63,15 @@ public class AnyUrlServlet extends HttpServlet {
     private void process(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType(contentType);
         resp.setCharacterEncoding(charset);
+        
+        if(headers != null) {
+            for(String key: headers.keySet()) {
+                for(String value: headers.get(key)) {
+                    resp.addHeader(key, value);
+                }
+            }
+        }
+        
         try(OutputStream os = resp.getOutputStream();) {
             if(file != null && file.exists() && file.canRead()) {
                 try(InputStream is = new FileInputStream(file)) {

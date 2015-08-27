@@ -2,11 +2,15 @@ package org.wiztools.anyurlhttpserver;
 
 import java.io.File;
 import java.io.PrintStream;
+import java.util.List;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.wiztools.commons.MultiValueMap;
+import org.wiztools.commons.MultiValueMapArrayList;
+import org.wiztools.commons.MultiValueMapLinkedHashSet;
 
 /**
  *
@@ -20,10 +24,12 @@ public class AnyUrlHttpServerMain {
         out.println("\t-f\t: File to serve. When not given, prints <p>Hello World!</p>");
         out.println("\t-c\t: Response Content-Type. Default is text/html.");
         out.println("\t-r\t: Response character encoding. Default is utf-8.");
+        out.println("\t-H\t: Header in the format: `header:value'.");
+        out.println("\t-h\t: Print this help.");
     }
     
     public static void main(String[] args) throws Exception {
-        OptionParser parser = new OptionParser("p:f:c:r:h");
+        OptionParser parser = new OptionParser("p:f:c:r:H:h");
         OptionSet options = parser.parse(args);
         if(options.has("h")) {
             printHelp(System.out);
@@ -47,29 +53,35 @@ public class AnyUrlHttpServerMain {
             System.exit(1);
         }
         
-        final File file;
+        AnyUrlServlet servlet = new AnyUrlServlet();
+        
         if(options.has("f")) {
             String fileStr = options.valueOf("f").toString();
-            file = new File(fileStr);
-        }
-        else {
-            file = null;
+            servlet.setFile(new File(fileStr));
         }
         
-        String contentType = null;
         if(options.has("c")) {
-            contentType = options.valueOf("c").toString();
+            servlet.setContentType(options.valueOf("c").toString());
         }
         
-        String charset = null;
         if(options.has("r")) {
-            charset = options.valueOf("r").toString();
+            servlet.setCharset(options.valueOf("r").toString());
         }
         
-        AnyUrlServlet servlet = new AnyUrlServlet();
-        servlet.setFile(file);
-        servlet.setContentType(contentType);
-        servlet.setCharset(charset);
+        if(options.has("H")) {
+            MultiValueMap headers = new MultiValueMapLinkedHashSet();
+            for(Object t: options.valuesOf("H")) {
+                final String headerLine = t.toString().trim();
+                final int sepIdx = headerLine.indexOf(':');
+                if((sepIdx > 0) && (sepIdx < headerLine.length())) {
+                    final String header = headerLine.substring(0, sepIdx);
+                    final String value = headerLine.substring(sepIdx + 1, headerLine.length());
+                    System.out.printf("\nHeader: Value => %s:%s\n", header, value);
+                    headers.put(header, value);
+                }
+            }
+            servlet.setHeaders(headers);
+        }
         
         Server server = new Server(port);
         server.setStopAtShutdown(true);
