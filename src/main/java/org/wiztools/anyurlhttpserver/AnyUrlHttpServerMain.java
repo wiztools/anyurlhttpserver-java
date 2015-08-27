@@ -22,7 +22,7 @@ public class AnyUrlHttpServerMain {
         out.println("\t-f\t: File to serve. When not given, prints <p>Hello World!</p>");
         out.println("\t-c\t: Response Content-Type. Default is text/html.");
         out.println("\t-r\t: Response character encoding. Default is utf-8.");
-        out.println("\t-H\t: Header in the format: `header:value'.");
+        out.println("\t-H\t: Response Header in the format: `header:value'.");
         out.println("\t-h\t: Print this help.");
     }
     
