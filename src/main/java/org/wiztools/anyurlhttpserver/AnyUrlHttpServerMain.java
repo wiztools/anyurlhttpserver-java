@@ -56,8 +56,20 @@ public class AnyUrlHttpServerMain {
             file = null;
         }
         
+        String contentType = null;
+        if(options.has("c")) {
+            contentType = options.valueOf("c").toString();
+        }
+        
+        String charset = null;
+        if(options.has("r")) {
+            charset = options.valueOf("r").toString();
+        }
+        
         AnyUrlServlet servlet = new AnyUrlServlet();
         servlet.setFile(file);
+        servlet.setContentType(contentType);
+        servlet.setCharset(charset);
         
         Server server = new Server(port);
         server.setStopAtShutdown(true);
