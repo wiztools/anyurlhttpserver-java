@@ -73,8 +73,8 @@ public class AnyUrlHttpServerMain {
                 final String headerLine = t.toString().trim();
                 final int sepIdx = headerLine.indexOf(':');
                 if((sepIdx > 0) && (sepIdx < headerLine.length())) {
-                    final String header = headerLine.substring(0, sepIdx);
-                    final String value = headerLine.substring(sepIdx + 1);
+                    final String header = headerLine.substring(0, sepIdx).trim();
+                    final String value = headerLine.substring(sepIdx + 1).trim();
                     // System.out.printf("\nHeader: Value => %s:%s\n", header, value);
                     headers.put(header, value);
                 }
