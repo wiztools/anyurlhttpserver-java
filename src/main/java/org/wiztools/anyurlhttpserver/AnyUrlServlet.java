@@ -22,6 +22,7 @@ public class AnyUrlServlet extends HttpServlet {
     private String charset = "utf-8";
     private File file;
     private MultiValueMap<String, String> headers;
+    private int statusCode = HttpServletResponse.SC_OK;
 
     public void setContentType(String contentType) {
         this.contentType = contentType;
@@ -37,6 +38,10 @@ public class AnyUrlServlet extends HttpServlet {
     
     public void setHeaders(MultiValueMap headers) {
         this.headers = headers;
+    }
+
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
     }
 
     @Override
@@ -71,6 +76,8 @@ public class AnyUrlServlet extends HttpServlet {
                 }
             }
         }
+        
+        resp.setStatus(statusCode);
         
         try(OutputStream os = resp.getOutputStream();) {
             if(file != null && file.exists() && file.canRead()) {

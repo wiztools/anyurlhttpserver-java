@@ -18,12 +18,13 @@ public class AnyUrlHttpServerMain {
     
     private static void printHelp(PrintStream out) {
         out.println("Parameters: ");
-        out.println("\t-p    [Mandatory] port number.");
-        out.println("\t-f    File to serve. When not given, prints <p>Hello World!</p>");
-        out.println("\t-c    Response Content-Type. Default is text/html.");
-        out.println("\t-r    Response character encoding. Default is utf-8.");
-        out.println("\t-H    * Response header in the format: `header:value'.");
-        out.println("\t-h    Print this help.");
+        out.println("  -p    [Mandatory] port number.");
+        out.println("  -f    File to serve. When not given, prints <p>Hello World!</p>");
+        out.println("  -c    Response Content-Type. Default is text/html.");
+        out.println("  -r    Response character encoding. Default is utf-8.");
+        out.println("  -H    * Response header in the format: `header:value'.");
+        out.println("  -s    Response status code.");
+        out.println("  -h    Print this help.");
         out.println("Parameters with * can be used more than once.");
     }
     
@@ -80,6 +81,16 @@ public class AnyUrlHttpServerMain {
                 }
             }
             servlet.setHeaders(headers);
+        }
+        
+        if(options.has("s")) {
+            try {
+                int statusCode = Integer.parseInt(options.valueOf("s").toString());
+                servlet.setStatusCode(statusCode);
+            }
+            catch(NumberFormatException ex) {
+                throw new IllegalArgumentException("Param -s must be a valid status code.");
+            }
         }
         
         Server server = new Server(port);
