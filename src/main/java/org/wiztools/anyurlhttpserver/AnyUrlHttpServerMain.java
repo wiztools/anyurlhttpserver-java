@@ -23,13 +23,13 @@ public class AnyUrlHttpServerMain {
         out.println("  -c    Response Content-Type. Default is text/html.");
         out.println("  -r    Response character encoding. Default is utf-8.");
         out.println("  -H    * Response header in the format: `header:value'.");
-        out.println("  -s    Response status code.");
+        out.println("  -s    Response status code. Default is 200.");
         out.println("  -h    Print this help.");
         out.println("Parameters with * can be used more than once.");
     }
     
     public static void main(String[] args) throws Exception {
-        OptionParser parser = new OptionParser("p:f:c:r:H:h");
+        OptionParser parser = new OptionParser("p:f:c:r:H:s:h");
         OptionSet options = parser.parse(args);
         if(options.has("h")) {
             printHelp(System.out);
