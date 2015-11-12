@@ -2,6 +2,7 @@ package org.wiztools.anyurlhttpserver;
 
 import java.io.File;
 import java.io.PrintStream;
+import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import org.eclipse.jetty.server.Server;
@@ -31,7 +32,15 @@ public class AnyUrlHttpServerMain {
     
     public static void main(String[] args) throws Exception {
         OptionParser parser = new OptionParser("p:f:c:r:H:s:t:h");
-        OptionSet options = parser.parse(args);
+        OptionSet options = null;
+        try {
+            options = parser.parse(args);
+        }
+        catch(OptionException ex) {
+            System.err.println(ex.getMessage());
+            System.exit(1);
+        }
+        
         if(options.has("h")) {
             printHelp(System.out);
             System.exit(0);
