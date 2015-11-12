@@ -24,12 +24,13 @@ public class AnyUrlHttpServerMain {
         out.println("  -r    Response character encoding. Default is utf-8.");
         out.println("  -H    * Response header in the format: `header:value'.");
         out.println("  -s    Response status code. Default is 200.");
+        out.println("  -t    Throttle milliseconds between each kb written. Used to simulate slow connection.");
         out.println("  -h    Print this help.");
         out.println("Parameters with * can be used more than once.");
     }
     
     public static void main(String[] args) throws Exception {
-        OptionParser parser = new OptionParser("p:f:c:r:H:s:h");
+        OptionParser parser = new OptionParser("p:f:c:r:H:s:t:h");
         OptionSet options = parser.parse(args);
         if(options.has("h")) {
             printHelp(System.out);
@@ -90,6 +91,21 @@ public class AnyUrlHttpServerMain {
             }
             catch(NumberFormatException ex) {
                 throw new IllegalArgumentException("Param -s must be a valid status code.");
+            }
+        }
+        
+        if(options.has("t")) {
+            try {
+                long throttleMillis = Long.parseLong(options.valueOf("t").toString());
+                if(throttleMillis > 1) {
+                    servlet.setThrottleMillis(throttleMillis);
+                }
+                else {
+                    throw new NumberFormatException();
+                }
+            }
+            catch(NumberFormatException ex) {
+                throw new IllegalArgumentException("Param -t must be a valid number.");
             }
         }
         

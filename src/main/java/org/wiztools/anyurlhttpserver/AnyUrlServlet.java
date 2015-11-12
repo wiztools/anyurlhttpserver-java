@@ -5,13 +5,16 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.wiztools.commons.Charsets;
 import org.wiztools.commons.MultiValueMap;
-import org.wiztools.commons.StreamUtil;
 
 /**
  *
@@ -23,6 +26,9 @@ public class AnyUrlServlet extends HttpServlet {
     private File file;
     private MultiValueMap<String, String> headers;
     private int statusCode = HttpServletResponse.SC_OK;
+    
+    // throttle per kb written:
+    private long throttleMillis = -1;
 
     public void setContentType(String contentType) {
         this.contentType = contentType;
@@ -42,6 +48,10 @@ public class AnyUrlServlet extends HttpServlet {
 
     public void setStatusCode(int statusCode) {
         this.statusCode = statusCode;
+    }
+
+    public void setThrottleMillis(long throttleMillis) {
+        this.throttleMillis = throttleMillis;
     }
 
     @Override
@@ -82,7 +92,30 @@ public class AnyUrlServlet extends HttpServlet {
         try(OutputStream os = resp.getOutputStream();) {
             if(file != null && file.exists() && file.canRead()) {
                 try(InputStream is = new FileInputStream(file)) {
-                    StreamUtil.copy(is, os);
+                    try(
+                            final ReadableByteChannel inChannel = Channels.newChannel(is);
+                            final WritableByteChannel outChannel = Channels.newChannel(os);
+                            ) {
+                        final ByteBuffer buffer = ByteBuffer.allocate(1000); // 1000 bytes = 1 Kb
+                        while(true) {
+                            // throttle?
+                            if(throttleMillis > 0l) {
+                                try {
+                                    Thread.sleep(throttleMillis);
+                                }
+                                catch(InterruptedException ex) {
+                                    throw new ServletException(ex);
+                                }
+                            }
+                            
+                            // read & write:
+                            int bytesRead = inChannel.read(buffer);
+                            if(bytesRead == -1) break;
+                            buffer.flip();
+                            while(buffer.hasRemaining()) outChannel.write(buffer);
+                            buffer.clear();
+                        }
+                    }
                 }
             }
             else {
